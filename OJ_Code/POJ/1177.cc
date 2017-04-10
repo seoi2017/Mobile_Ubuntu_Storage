@@ -15,7 +15,7 @@
 #define nw (now->w)//原宽度（未离散化前）
 #define ne (now->len)//直接子区间覆盖情况：1为仅左区间，2为仅右区间，3为全覆盖，0为不覆盖
 #define nc (now->cov)//覆盖层数
-#define ns (now->sum)//最末子区间覆盖数
+#define ns (now->sum)//覆盖长度
 #define root (&seg[1])
 #define in(l,r,h,s) (line[++top].l=(l),line[top].r=(r),line[top].h=(h),line[top].s=(s))
 using namespace std;
@@ -46,11 +46,11 @@ inline void refresh(seg_t *now){
 }
 inline void update(seg_t *now,int l,int r,int s){
     if(l<=nl && nr<=r){
-        if(nc==0)
-        nc+=s;
+        nc++;
     }
     int m=mid;
     if(l<mid)update(lson,l,r,s);if(r>mid)update(rson,l,r,s);
+    refresh(now);
 }
 void solve(){
     scanf("%d",&n);
