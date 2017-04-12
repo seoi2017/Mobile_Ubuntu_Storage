@@ -1,7 +1,26 @@
-1
-5 5
-A 1 2
-D 1 2
-A 1 2
-D 2 4
-A 1 4
+4
+5
+aa
+ab
+aba
+ba
+bb
+6
+aloha
+arachnid
+dog
+gopher
+rat
+tiger
+3
+oak
+maple
+elm
+7
+ber
+dfg
+rfs
+gkd
+sdt
+tag
+gaa
