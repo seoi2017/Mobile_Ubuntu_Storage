@@ -1,3 +1,6 @@
+//Problem:[POJ2337][Catenyms]
+//Powered By HYS.
+//Accepted at 21:34:51,2017/04/13 on VJudge.
 #include<iostream>
 #include<cstdio>
 #include<cstring>
