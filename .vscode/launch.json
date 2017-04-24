@@ -2,16 +2,32 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C++ Launch(Ubuntu)",
+            "name": "C++(Linux|GDB)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/BASIC.exe",
             "targetArchitecture": "amd64",
-            "miDebuggerPath":"/usr/bin/gdb",
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "externalConsole": true,
-            "preLaunchTask": "g++"
+            "preLaunchTask": "g++",
+            "linux": {
+                "MIMode": "gdb"
+            }
+        },
+        {
+            "name": "C++(Linux|LLDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/BASIC.exe",
+            "targetArchitecture": "amd64",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "externalConsole": true,
+            "preLaunchTask": "g++",
+            "linux": {
+                "MIMode": "lldb"
+            }
         }
     ]
 }
