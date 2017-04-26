@@ -1,3 +1,6 @@
+//线段树-模板(极小常数)
+//Powered By Inv.
+//2016/4/25 20:25
 #include<iostream>
 #include<cstdio>
 #include<cstdlib>
@@ -20,7 +23,7 @@ struct Segment_Tree_t{
     node_t *root;
     int top=0;
     node_t *build_in(int l,int r){//inside
-        node_t *now=seg[++top];
+        node_t *now=&seg[++top];
         now->l=l,now->r=r;
         now->mul=1,now->add=0;
         if(l==r){
@@ -31,7 +34,7 @@ struct Segment_Tree_t{
             int mid=(l+r)>>1;
             now->lc=build_in(l,mid);
             now->rc=build_in(mid+1,r);
-            now->s=now->lc->sum+now->rc->sum;
+            now->sum=(now->lc->sum+now->rc->sum)%P;
         }
         return now;
     }
@@ -39,42 +42,57 @@ struct Segment_Tree_t{
         root=build_in(l,r);
     }
     inline int length(node_t *now){
-        return (now->r-now->l);
+        return (now->r-now->l)+1;
     }
     inline void pushdown(node_t *now,node_t *lson,node_t *rson){
-         
+        lson->mul=(lson->mul*now->mul)%P;
+        rson->mul=(rson->mul*now->mul)%P;
+        lson->add=(lson->add*now->mul+now->add)%P;
+        rson->add=(rson->add*now->mul+now->add)%P;
+        lson->sum=(lson->sum*now->mul+length(lson)*now->add)%P;
+        rson->sum=(rson->sum*now->mul+length(rson)*now->add)%P;
+        now->mul=1;
+        now->add=0;
     }
     void mul_update(node_t *now,int l,int r,ll_t s){
-        if(l<=now->l && r>=now->r){
-            now->mul=now->mul*s%P;
-            now->sum=now->sum*s%P;
-            now->add=now->add*s%P;
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr){
+            now->mul=(now->mul*s)%P;
+            now->sum=(now->sum*s)%P;
+            now->add=(now->add*s)%P;
             return;
         }
         node_t *lson=now->lc,*rson=now->rc;
-        pushdown(now,lson,rson);
-        int mid=(now->l+now->r)>>1;
-        if(l<=mid)mul_update(lson,l,r);
-        if(r>mid)mul_update(rson,l,r);
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
+        int mid=(nl+nr)>>1;
+        if(l<=mid)mul_update(lson,l,r,s);
+        if(r>mid)mul_update(rson,l,r,s);
+        now->sum=(lson->sum+rson->sum)%P;
     }
     void add_update(node_t *now,int l,int r,ll_t s){
-        if(l<=now->l && r>=now->r){
-            lson
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr){
+            now->add=(now->add+s)%P;
+            now->sum=(now->sum+((length(now)*s)%P))%P;
+            return;
         }
         node_t *lson=now->lc,*rson=now->rc;
-        pushdown(now,lson,rson);
-        int mid=(now->l+now->r)>>1;
-        if(l<=mid)add_update(lson,l,r);
-        if(r>mid)add_update(rson,l,r);
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
+        int mid=(nl+nr)>>1;
+        if(l<=mid)add_update(lson,l,r,s);
+        if(r>mid)add_update(rson,l,r,s);
+        now->sum=(lson->sum+rson->sum)%P;
     }
     ll_t query(node_t *now,int l,int r){
-        if(l<=now->l && r>=now->r)return now->sum;
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr)return now->sum;
         node_t *lson=now->lc,*rson=now->rc;
-        pushdown(now,lson,rson);
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
         ll_t ans=0;
-        int mid=(now->l+now->r)>>1;
-        if(l<=mid)ans+=query(lson,l,r);
-        if(r>mid)ans+=query(rson,l,r);
+        int mid=(nl+nr)>>1;
+        if(l<=mid)ans=(ans+query(lson,l,r))%P;
+        if(r>mid)ans=(ans+query(rson,l,r))%P;
+        now->sum=(lson->sum+rson->sum)%P;
         return ans;
     }
 }seg;
@@ -86,12 +104,14 @@ int main(){
     freopen("output.txt","w",stdout);
     scanf("%d%d%d",&n,&m,&P);
     seg.build(1,n);
-    for(int i=1;i<=n;i++){
+    for(int i=1;i<=m;i++){
         scanf("%d%d%d",&c,&a,&b);
-        if(c==3)printf("%lld\n",seg.query()%(1LL*P));//Query.
-        scanf("%lld",&s);
-        if(c==1)seg.mul_update(a,b,s%(1LL*P));//Mul.
-        else seg.add_update(a,b,s%(1LL*P));//Add.
+        if(c==3)printf("%lld\n",seg.query(seg.root,a,b)%P);//Query.
+        else{
+            scanf("%lld",&s);
+            if(c==1)seg.mul_update(seg.root,a,b,s%P);//Mul.
+            else seg.add_update(seg.root,a,b,s%P);//Add.
+        }
     }
     fclose(stdin);
     fclose(stdout);
